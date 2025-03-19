@@ -7,6 +7,12 @@
 
 
 </head><body>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <pre><code id="codigo-contenido"></code></pre>
+    </div>
+  </div>
   <header>
   <h1>Mi Listado de archivos PHP</h1>
   <nav>
@@ -75,8 +81,9 @@ foreach($archivos as $archivo){
       }
       else{
       echo '<li class="file">';
+      echo '<div class="file-actions">';
     }
-      echo '<a href="'.$dir.'/'.$archivo.'">';
+      echo '<a class="file-link" href="'.$dir.'/'.$archivo.'">';
       $extension= pathinfo($archivo, PATHINFO_EXTENSION);
       if(in_array($extension, array('jpg','jpeg','png','gif','webp'))){
         echo '<img src="'.$dir.'/'.$archivo.'" alt="'.$archivo.'">';
@@ -87,6 +94,10 @@ foreach($archivos as $archivo){
       }
       echo '<span>'.$archivo.'</span>';
       echo '</a>';
+      echo '<button class="ver-codigo" onclick="mostrarCodigo(\''.htmlspecialchars($dir.'/'.$archivo, ENT_QUOTES).'\')">';
+      echo '<i class="fas fa-code"></i> Ver código';
+      echo '</button>';
+      echo '</div>';
       echo '</li>';
     }
 
@@ -141,6 +152,29 @@ function cambiarVista(){
 
 
 
+async function mostrarCodigo(ruta) {
+    try {
+        const response = await fetch(ruta);
+        const texto = await response.text();
+        document.getElementById('codigo-contenido').textContent = texto;
+        document.getElementById('modal').style.display = 'block';
+    } catch (error) {
+        console.error('Error al cargar el archivo:', error);
+    }
+}
+
+// Cerrar el modal cuando se hace clic en la X
+document.querySelector('.close').onclick = function() {
+    document.getElementById('modal').style.display = 'none';
+}
+
+// Cerrar el modal cuando se hace clic fuera de él
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
 </script>
 
 </body>
